@@ -1,0 +1,21 @@
+# 파이썬 가상환경 (절대 업로드 금지)
+venv/
+ENV/
+env/
+
+# 파이썬 실행 캐시 및 찌꺼기
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+htmlcov/
+.toast
+.SPIES
+.coverage
+*.db
+*.sqlite3
+
+# 로컬 환경 변수 파일 (인증키 보호용)
+.env
+.env.local
