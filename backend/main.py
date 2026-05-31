@@ -4,6 +4,8 @@ import re
 import xml.etree.ElementTree as ET
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from supabase import create_client, Client
 from pydantic import BaseModel
 from typing import Optional
@@ -180,3 +182,28 @@ def add_medicine(medicine: MedicineBase):
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database transaction error: {str(e)}")
+    
+
+# ------------------------------------------------------------
+# 🔥 [파일 맨 밑에 추가] 프론트엔드 정적 파일 연결 코드
+# ------------------------------------------------------------
+
+# 1. 리액트 빌드 파일이 모여있는 'dist' 폴더 경로 잡기
+frontend_dist_dir = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+
+# 2. /assets 폴더 내부의 css, js 파일들을 FastAPI가 읽을 수 있도록 등록
+if os.path.exists(os.path.join(frontend_dist_dir, "assets")):
+    app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist_dir, "assets")), name="assets")
+
+# 3. 사용자가 메인 주소로 들어오면 리액트의 index.html 화면을 띄워주기
+@app.get("/{catchall:path}")
+def serve_frontend(catchall: str):
+    # 만약 사용자가 /api로 시작하는 백엔드 주소를 요청한 게 아니라면 모두 리액트 화면으로 넘깁니다.
+    if catchall.startswith("api"):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not Found")
+        
+    index_file = os.path.join(frontend_dist_dir, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    return {"message": "프론트엔드 빌드 파일을 찾을 수 없습니다. npm run build를 실행했는지 확인하세요."}
