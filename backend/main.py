@@ -189,7 +189,8 @@ def add_medicine(medicine: MedicineBase):
 # ------------------------------------------------------------
 
 # 1. 리액트 빌드 파일이 모여있는 'dist' 폴더 경로 잡기
-frontend_dist_dir = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+frontend_dist_dir = os.path.join(BASE_DIR, "frontend", "dist")
 
 # 2. /assets 폴더 내부의 css, js 파일들을 FastAPI가 읽을 수 있도록 등록
 if os.path.exists(os.path.join(frontend_dist_dir, "assets")):
